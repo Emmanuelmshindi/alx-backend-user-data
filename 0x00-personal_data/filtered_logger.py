@@ -45,7 +45,7 @@ def filter_datum(fields: List[str], redaction: str, message: str,
                          f'{field}={redaction}{separator}', message)
     return message
 
-def get_logger -> logging.Logger:
+def get_logger() -> logging.Logger:
     """Logger object with PII_FIELDS"""
     logger = logging.get_logger("user_data")
     logger.setLevel(logging.INFO)
