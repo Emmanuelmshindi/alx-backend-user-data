@@ -24,13 +24,14 @@ class RedactingFormatter(logging.Formatter):
         return filter_datum(self.fields, self.REDACTION,
                             super().format(record), self.SEPARATOR)
 
-PII_FIELDS = ("name", "email", "ssn", "password")
+PII_FIELDS = ("name", "email", "ssn", "password", "phone")
+
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """Secure connection to mysql database"""
     db_connect = mysql.connector.connect(
-        user = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
-        password = os.getenv('PERSONAL_DATA_DB_PASSWORD', ''),
+        user=os.getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
+        password=os.getenv('PERSONAL_DATA_DB_PASSWORD', ''),
         host=os.getenv('PERSONAL_DATA_DB_HOST', 'localhost'),
         database=os.getenv('PERSONAL_DATA_DB_NAME')
     )
@@ -45,20 +46,22 @@ def filter_datum(fields: List[str], redaction: str, message: str,
                          f'{field}={redaction}{separator}', message)
     return message
 
+
 def get_logger() -> logging.Logger:
     """Logger object with PII_FIELDS"""
-    logger = logging.get_logger("user_data")
+    logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
-    logger.propagate(false)
+    logger.propagate = False
 
-    stream_handler = logging.Streamhandler()
+    stream_handler = logging.StreamHandler()
     stream_handler.setLevel(loggin.INFO)
 
     formatter = RedactingFormatter(list(PII_FIELDS))
-    stream_handler.set_formatter(formatter)
+    stream_handler.setFormatter(formatter)
 
     logger.add_handler(stream_handler)
     return logger
+
 
 def main() -> None:
     """Get and display all rows in a database, and log
@@ -78,6 +81,7 @@ def main() -> None:
 
     cur.close()
     db.close()
+
 
 if __name__ == "__main__":
     main()
